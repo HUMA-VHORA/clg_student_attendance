@@ -3,6 +3,10 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import Attendance
 from students.models import Student
 import json
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .serializers import StudentSerializer
+
 
 
 @csrf_exempt

@@ -2,6 +2,9 @@ from django.http import JsonResponse
 from .models import Student
 from django.views.decorators.csrf import csrf_exempt
 import json
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .serializers import StudentSerializer
 
 
 @csrf_exempt
