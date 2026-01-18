@@ -1,51 +1,61 @@
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from .models import Attendance
 from students.models import Student
-from django.views.decorators.csrf import csrf_exempt
 import json
 
+
 @csrf_exempt
-def attendance_list(request):
+def attendance_api(request):
+
     if request.method == 'GET':
-        records = Attendance.objects.all()
+        records = Attendance.objects.select_related('student').all()
         data = []
-        for r in records:
+        for a in records:
             data.append({
-                'id': r.id,
-                'student_id': r.student.student_id,
-                'name': r.student.name,
-                'date': r.date,
-                'status': r.status
+                'id': a.id,
+                'date': str(a.date),
+                'status': a.status,
+                'student_id': a.student.id,
+                'name': a.student.name
             })
         return JsonResponse(data, safe=False)
 
-    if request.method == 'POST':
-        body = json.loads(request.body)
-        student = Student.objects.get(id=body['student_id'])
-        Attendance.objects.create(
-            student=student,
-            date=body['date'],
-            status=body['status']
-        )
-        return JsonResponse({'message': 'Attendance marked'})
+    elif request.method == 'POST':
+        try:
+            body = json.loads(request.body)
+            student = Student.objects.get(id=body['student_id'])
+
+            Attendance.objects.update_or_create(
+                student=student,
+                date=body['date'],
+                defaults={'status': body['status']}
+            )
+
+            return JsonResponse({'message': 'Attendance saved'}, status=201)
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
 def attendance_by_date(request, date):
-    records = Attendance.objects.filter(date=date)
-    data = []
-    for r in records:
-        data.append({
-            'student_id': r.student.student_id,
-            'name': r.student.name,
-            'status': r.status
-        })
+    records = Attendance.objects.select_related('student').filter(date=date)
+    data = [{
+        'id': a.id,
+        'date': str(a.date),
+        'status': a.status,
+        'student_id': a.student.id,
+        'name': a.student.name
+    } for a in records]
     return JsonResponse(data, safe=False)
 
 
 def attendance_by_student(request, student_id):
-    records = Attendance.objects.filter(student__id=student_id)
-    data = []
-    for r in records:
-        data.append({
-            'date': r.date,
-            'status': r.status
-        })
+    records = Attendance.objects.select_related('student').filter(student__id=student_id)
+    data = [{
+        'id': a.id,
+        'date': str(a.date),
+        'status': a.status,
+        'student_id': a.student.id,
+        'name': a.student.name
+    } for a in records]
     return JsonResponse(data, safe=False)
+

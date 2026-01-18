@@ -6,8 +6,16 @@ def home(request):
     return HttpResponse("College Attendance System API Running")
 
 urlpatterns = [
-    path('', home),
+    path('', home),   # ✅ homepage
+
     path('admin/', admin.site.urls),
+
+    # UI routes
+    path('students/', include('students.urls')),
+    path('attendance/', include('attendance.urls')),
+
+    # API routes
     path('api/students/', include('students.urls')),
     path('api/attendance/', include('attendance.urls')),
 ]
+
