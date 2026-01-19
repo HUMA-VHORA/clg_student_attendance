@@ -31,25 +31,36 @@ This project allows teachers to **add students, mark attendance, and view report
 
 clg_attendance/
 │
-├── clg_attendance/ # Django project settings
-│ ├── settings.py # Database and apps configuration
-│ ├── urls.py # Project-level URL routes
-│ └── wsgi.py
+├── attendance/
+│   ├── migrations/
+│   ├── __init**.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── serializers.py
+│   ├── urls.py
+│   └── views.py
 │
-├── students/ # Student app
-│ ├── models.py # Student model
-│ ├── views.py # Student API views
-│ ├── urls.py # Student API URLs
-│ └── admin.py
+├── students/
+│   ├── migrations/
+│   ├──__init**.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── serializers.py
+│   ├── urls.py
+│   └── views.py
 │
-├── attendance/ # Attendance app
-│ ├── models.py # Attendance model
-│ ├── views.py # Attendance API views
-│ ├── urls.py # Attendance API URLs
-│ └── admin.py
+├── clg_attendance/
+│   ├──__pycache**/
+│   ├──__init**.py
+│   ├── asgi.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
 │
 ├── manage.py
-└── requirements.txt
+└── README.md
 
 Create a virtual environment & activate
 python -m venv myenv
@@ -72,19 +83,24 @@ Server will start at:
 <http://127.0.0.1:8000/>
 
 🔹 Example JSON for Postman
-Add Student (POST)
-{
-  "student_id": "CSE001",
-  "name": "Rahul Sharma",
-  "department": "CSE"
-}
 
-Mark Attendance (POST)
-{
-  "student_id": 1,
-  "date": "2026-01-17",
-  "status": "Present"
-}
+GET-<http://127.0.0.1:8000/api/attendance/>
+[
+    {
+        "id": 1,
+        "date": "2026-01-01",
+        "status": "Present",
+        "student_id": 1,
+        "name": "Student 1"
+    },
+    {
+        "id": 2,
+        "date": "2026-01-01",
+        "status": "Present",
+        "student_id": 2,
+        "name": "Student 2"
+    }
+]
 
 📈 Reports
 
