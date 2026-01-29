@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     
     'students',
     'attendance',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -106,3 +107,4 @@ CACHES = {
         }
     }
 }
+

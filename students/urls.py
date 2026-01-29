@@ -1,7 +1,7 @@
 from django.urls import path
-from . import views
+from .views import StudentListAPI, MyStudentInfoAPI
 
 urlpatterns = [
-    path('', views.student_list, name='student_list_api'),   # API + UI JSON
+    path('', StudentListAPI.as_view(), name='student_list_api'),
+    path('<int:student_id>/', MyStudentInfoAPI.as_view(), name='my_student_info_api'),
 ]
-
