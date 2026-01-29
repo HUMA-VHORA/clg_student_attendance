@@ -1,15 +1,20 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
+
 from .models import Attendance
 from students.models import Student
+
 import json
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from .serializers import StudentSerializer
 
 
+# ==============================
+# ALL ATTENDANCE - GET + POST
+# ==============================
 
 @csrf_exempt
+@cache_page(60 * 5)   # ✅ Cache GET for 5 minutes
 def attendance_api(request):
 
     if request.method == 'GET':
@@ -36,10 +41,19 @@ def attendance_api(request):
                 defaults={'status': body['status']}
             )
 
+            cache.clear()   # ✅ Clear cache after update
+
             return JsonResponse({'message': 'Attendance saved'}, status=201)
 
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
+
+
+# ==============================
+# ATTENDANCE BY DATE
+# ==============================
+
+@cache_page(60 * 5)
 def attendance_by_date(request, date):
     records = Attendance.objects.select_related('student').filter(date=date)
     data = [{
@@ -52,6 +66,11 @@ def attendance_by_date(request, date):
     return JsonResponse(data, safe=False)
 
 
+# ==============================
+# ATTENDANCE BY STUDENT
+# ==============================
+
+@cache_page(60 * 5)
 def attendance_by_student(request, student_id):
     records = Attendance.objects.select_related('student').filter(student__id=student_id)
     data = [{

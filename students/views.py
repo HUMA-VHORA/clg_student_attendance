@@ -1,13 +1,18 @@
 from django.http import JsonResponse
-from .models import Student
 from django.views.decorators.csrf import csrf_exempt
-import json
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from .serializers import StudentSerializer
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
 
+from .models import Student
+import json
+
+
+# ==============================
+# STUDENT LIST + CREATE
+# ==============================
 
 @csrf_exempt
+@cache_page(60 * 5)   # ✅ Cache GET for 5 minutes
 def student_list(request):
 
     if request.method == 'GET':
@@ -34,6 +39,8 @@ def student_list(request):
                 department=body['department']
             )
 
+            cache.clear()   # ✅ Clear cache after insert
+
             return JsonResponse(
                 {'message': 'Student added successfully', 'id': student.id},
                 status=201
@@ -41,5 +48,3 @@ def student_list(request):
 
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
-
-
