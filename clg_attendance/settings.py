@@ -9,10 +9,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-# =========================
-# APPLICATIONS
-# =========================
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -21,17 +17,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Third-party
+    
     'rest_framework',
 
-    # Local apps
+    
     'students',
     'attendance',
 ]
-
-# =========================
-# MIDDLEWARE
-# =========================
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -46,10 +38,6 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'clg_attendance.urls'
 
 WSGI_APPLICATION = 'clg_attendance.wsgi.application'
-
-# =========================
-# TEMPLATES
-# =========================
 
 TEMPLATES = [
     {
@@ -67,10 +55,6 @@ TEMPLATES = [
     },
 ]
 
-# =========================
-# DATABASE (PostgreSQL)
-# =========================
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -82,10 +66,6 @@ DATABASES = {
     }
 }
 
-# =========================
-# PASSWORD VALIDATION
-# =========================
-
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -93,26 +73,14 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# =========================
-# INTERNATIONALIZATION
-# =========================
-
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
 USE_TZ = True
 
-# =========================
-# STATIC FILES
-# =========================
-
 STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# =========================
-# DJANGO REST + JWT AUTH
-# =========================
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -123,19 +91,11 @@ REST_FRAMEWORK = {
     ),
 }
 
-# =========================
-# SIMPLE JWT SETTINGS
-# =========================
-
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
-
-# =========================
-# REDIS CACHE CONFIG
-# =========================
 
 CACHES = {
     "default": {

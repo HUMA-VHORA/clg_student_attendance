@@ -8,13 +8,8 @@ from students.models import Student
 
 import json
 
-
-# ==============================
-# ALL ATTENDANCE - GET + POST
-# ==============================
-
 @csrf_exempt
-@cache_page(60 * 5)   # ✅ Cache GET for 5 minutes
+@cache_page(60 * 5)   
 def attendance_api(request):
 
     if request.method == 'GET':
@@ -41,17 +36,13 @@ def attendance_api(request):
                 defaults={'status': body['status']}
             )
 
-            cache.clear()   # ✅ Clear cache after update
+            cache.clear()   
 
             return JsonResponse({'message': 'Attendance saved'}, status=201)
 
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
-
-# ==============================
-# ATTENDANCE BY DATE
-# ==============================
 
 @cache_page(60 * 5)
 def attendance_by_date(request, date):
@@ -65,10 +56,6 @@ def attendance_by_date(request, date):
     } for a in records]
     return JsonResponse(data, safe=False)
 
-
-# ==============================
-# ATTENDANCE BY STUDENT
-# ==============================
 
 @cache_page(60 * 5)
 def attendance_by_student(request, student_id):

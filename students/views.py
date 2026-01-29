@@ -7,12 +7,8 @@ from .models import Student
 import json
 
 
-# ==============================
-# STUDENT LIST + CREATE
-# ==============================
-
 @csrf_exempt
-@cache_page(60 * 5)   # ✅ Cache GET for 5 minutes
+@cache_page(60 * 5)   
 def student_list(request):
 
     if request.method == 'GET':
@@ -39,7 +35,7 @@ def student_list(request):
                 department=body['department']
             )
 
-            cache.clear()   # ✅ Clear cache after insert
+            cache.clear()   
 
             return JsonResponse(
                 {'message': 'Student added successfully', 'id': student.id},
