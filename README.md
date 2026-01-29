@@ -3,19 +3,22 @@
 A full-stack College Student Attendance Management System built using:
 
 ✅ Django + Django REST Framework (Backend APIs)
-
-✅ PostgreSQL (Database)
-
+✅ PostgreSQL / SQLite (Database)
+✅ Redis Cache (Performance Optimization)
+✅ JWT Authentication (Secure Login)
 ✅ Streamlit (Frontend UI)
-
 ✅ Postman (API Testing)
 
-This system allows teachers to add students, mark attendance, and view attendance reports via APIs or a simple web interface.
+This system allows teachers to add students, mark attendance, and view attendance reports via secure APIs and a simple web interface.
 
 ✅ Features
 🔧 Backend (Django REST API)
 
-Add Students (ID, Name, Department)
+🔐 JWT Authentication (Login & Token-based access)
+
+⚡ Redis Caching for faster API responses
+
+Add Students (Student ID, Name, Department)
 
 Mark Attendance (Present / Absent)
 
@@ -27,21 +30,27 @@ Date-wise
 
 Student-wise
 
-PostgreSQL database integration
+PostgreSQL / SQLite database integration
 
 REST APIs tested using Postman
 
-Primary Key & Foreign Key relationship between Student and Attendance tables
+Proper Primary Key & Foreign Key relationship between:
+
+Student table
+
+Attendance table
 
 🎨 Frontend (Streamlit)
 
-Home Dashboard
+🏠 Home Dashboard
 
-Add Student Form
+➕ Add Student Form
 
-Mark Attendance Page
+📝 Mark Attendance Page (Student dropdown)
 
-View Attendance in Table Format
+📊 View Attendance in Table Format
+
+Frontend communicates with Django REST APIs using HTTP requests.
 
 🛠 Technology Stack
 
@@ -52,6 +61,10 @@ Django
 Django REST Framework
 
 PostgreSQL / SQLite
+
+Redis
+
+JWT (SimpleJWT)
 
 Streamlit
 
@@ -89,32 +102,57 @@ clg_student_attendance/
 ├── manage.py
 └── README.md
 
-Run Django Backend
+▶️ Run Django Backend
+
+Activate virtual environment and run:
+
 python manage.py runserver
 
 Backend runs at:
 
 <http://127.0.0.1:8000/>
 
-API Endpoints
+🔗 API Endpoints
+🔐 Auth (JWT)
 
-Students API
+Login:
+
+POST /api/token/
+
+Refresh Token:
+
+POST /api/token/refresh/
+
+👨‍🎓 Students API
+GET /api/students/
+POST /api/students/
+
+Example:
+
 <http://127.0.0.1:8000/api/students/>
 
-Attendance API
+📝 Attendance API
+GET /api/attendance/
+POST /api/attendance/
+
+Example:
+
 <http://127.0.0.1:8000/api/attendance/>
 
-Run Streamlit Frontend
+▶️ Run Streamlit Frontend
 
 Open new terminal:
 
 cd streamlit_frontend
 streamlit run Home.py
 
+Make sure Django backend is already running.
+
 🧪 API Testing (Postman Example)
 GET Attendance
-
 GET <http://127.0.0.1:8000/api/attendance/>
+
+Response:
 
 [
   {
@@ -127,7 +165,7 @@ GET <http://127.0.0.1:8000/api/attendance/>
   {
     "id": 2,
     "date": "2026-01-01",
-    "status": "Present",
+    "status": "Absent",
     "student_id": 2,
     "name": "Student 2"
   }
