@@ -2,30 +2,23 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
+
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
 
 from .models import Attendance
 from students.models import Student
+from .decorators import role_required   # ✅ NEW
 
 
-def is_teacher(user):
-    return user.groups.filter(name='Teacher').exists()
-
-def is_student(user):
-    return user.groups.filter(name='Student').exists()
-
-
-@method_decorator(cache_page(60*5), name='dispatch')  
+@method_decorator(cache_page(60*5), name='dispatch')
 class AttendanceAPI(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
+    @role_required(['Teacher'])
     def get(self, request):
-        if not is_teacher(request.user):
-            return Response({'error': 'Access denied'}, status=403)
-
         records = Attendance.objects.select_related('student').all()
         data = [{
             'id': a.id,
@@ -36,10 +29,8 @@ class AttendanceAPI(APIView):
         } for a in records]
         return Response(data)
 
+    @role_required(['Teacher'])
     def post(self, request):
-        if not is_teacher(request.user):
-            return Response({'error': 'Access denied'}, status=403)
-
         body = request.data
         try:
             student = Student.objects.get(id=body['student_id'])
@@ -48,8 +39,9 @@ class AttendanceAPI(APIView):
                 date=body['date'],
                 defaults={'status': body['status']}
             )
-            cache.clear()  
+            cache.clear()
             return Response({'message': 'Attendance saved'}, status=201)
+
         except Student.DoesNotExist:
             return Response({'error': 'Student not found'}, status=404)
         except Exception as e:
@@ -61,10 +53,8 @@ class AttendanceByDateAPI(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
+    @role_required(['Teacher'])
     def get(self, request, date):
-        if not is_teacher(request.user):
-            return Response({'error': 'Access denied'}, status=403)
-
         records = Attendance.objects.select_related('student').filter(date=date)
         data = [{
             'id': a.id,
@@ -81,10 +71,10 @@ class AttendanceByStudentAPI(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
+    @role_required(['Student'])
     def get(self, request, student_id):
-        if not is_student(request.user):
-            return Response({'error': 'Access denied'}, status=403)
 
+        # Extra safety check (student can see only own data)
         if request.user.student.id != student_id:
             return Response({'error': 'Access denied'}, status=403)
 

@@ -2,16 +2,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
+
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
+
 from .models import Student
-
-def is_teacher(user):
-    return user.groups.filter(name='Teacher').exists()
-
-def is_student(user):
-    return user.groups.filter(name='Student').exists()
+from attendance.decorators import role_required   
 
 
 @method_decorator(cache_page(60*5), name='dispatch')
@@ -19,10 +16,8 @@ class StudentListAPI(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
+    @role_required(['Teacher'])
     def get(self, request):
-        if not is_teacher(request.user):
-            return Response({'error': 'Access denied'}, status=403)
-
         students = Student.objects.all()
         data = [{
             'id': s.id,
@@ -32,10 +27,8 @@ class StudentListAPI(APIView):
         } for s in students]
         return Response(data)
 
+    @role_required(['Teacher'])
     def post(self, request):
-        if not is_teacher(request.user):
-            return Response({'error': 'Access denied'}, status=403)
-
         body = request.data
         try:
             student = Student.objects.create(
@@ -44,7 +37,10 @@ class StudentListAPI(APIView):
                 department=body['department']
             )
             cache.clear()
-            return Response({'message': 'Student added successfully', 'id': student.id}, status=201)
+            return Response(
+                {'message': 'Student added successfully', 'id': student.id},
+                status=201
+            )
         except Exception as e:
             return Response({'error': str(e)}, status=400)
 
@@ -54,10 +50,10 @@ class MyStudentInfoAPI(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
+    @role_required(['Student'])
     def get(self, request, student_id):
-        if not is_student(request.user):
-            return Response({'error': 'Access denied'}, status=403)
 
+        
         if request.user.student.id != student_id:
             return Response({'error': 'Access denied'}, status=403)
 
@@ -70,5 +66,6 @@ class MyStudentInfoAPI(APIView):
                 'department': s.department
             }
             return Response(data)
+
         except Student.DoesNotExist:
             return Response({'error': 'Student not found'}, status=404)
